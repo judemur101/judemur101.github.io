@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Jude Murray: data analytics, statistics and quantitative finance portfolio.">
+<title>Jude Murray Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an analyst's research sheet. Wide expanded headline, a live-drawn price path as the hero,
+   projects set like screener output rows with spec columns, mono for data labels. */
+:root {
+  --paper: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #111a2b;
+  --muted: #5a6577;
+  --rule: #d6dbe3;
+  --accent: #2446d8;
+  --up: #12805c;
+  --down: #c2392b;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d121b; --surface: #141b27; --ink: #e6ebf3; --muted: #95a1b4;
+    --rule: #263042; --accent: #7d97ff; --up: #3fbf8f; --down: #f07565; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d121b; --surface: #141b27; --ink: #e6ebf3; --muted: #95a1b4;
+  --rule: #263042; --accent: #7d97ff; --up: #3fbf8f; --down: #f07565; color-scheme: dark;
+}
+
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* top bar */
+.bar { border-bottom: 1px solid var(--rule); }
+.bar .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+.bar nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.bar nav a { color: var(--ink); text-decoration: none; font-size: 14px; }
+.bar nav a:hover { color: var(--accent); }
+.mark { font-family: var(--mono); font-size: 13px; font-weight: 500; }
+
+/* hero */
+.hero .wrap { padding-block: 56px 40px; display: grid; gap: 32px; }
+.hero h1 {
+  font-family: var(--display); font-stretch: 125%; font-weight: 800;
+  font-size: clamp(44px, 9vw, 104px); line-height: .92; letter-spacing: -.02em; margin: 0;
+  text-wrap: balance;
+}
+.hero h1 span { display: block; font-stretch: 62%; font-weight: 500; color: var(--muted); font-size: .42em; letter-spacing: 0; margin-top: 12px; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: end; }
+.hero-grid > * { min-width: 0; }
+.lede { font-size: 19px; max-width: 34em; margin: 0; }
+.chart-card { border: 1px solid var(--rule); background: var(--surface); padding: 14px 16px 10px; }
+.chart-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+.chart-head b { font-weight: 500; }
+.chg { color: var(--up); }
+canvas { display: block; width: 100%; height: 170px; }
+.formula { font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px dashed var(--rule); padding-top: 8px; margin-top: 6px; overflow-x: auto; white-space: nowrap; }
+
+/* stat strip */
+.strip { border-block: 1px solid var(--rule); background: var(--surface); }
+.strip .wrap { display: grid; grid-template-columns: repeat(4, 1fr); padding-block: 0; }
+.strip div { padding: 18px 16px 18px 0; border-right: 1px solid var(--rule); }
+.strip div:last-child { border-right: 0; }
+.strip strong { display: block; font-family: var(--display); font-stretch: 110%; font-size: 22px; font-weight: 700; line-height: 1.2; }
+
+section.block .wrap { padding-block: 72px 24px; }
+h2 { font-family: var(--display); font-stretch: 112%; font-weight: 750; font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 6px 0 28px; letter-spacing: -.01em; text-wrap: balance; }
+
+/* projects as screener rows */
+.rows { border-top: 2px solid var(--ink); }
+.row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 32px; padding: 26px 0; border-bottom: 1px solid var(--rule); }
+.row > * { min-width: 0; }
+.row h3 { font-family: var(--display); font-stretch: 100%; font-weight: 700; font-size: 22px; margin: 0 0 4px; line-height: 1.2; }
+.row .file { font-family: var(--mono); font-size: 13px; color: var(--accent); margin-bottom: 10px; overflow-wrap: anywhere; }
+.row p { margin: 0 0 10px; max-width: 62ch; }
+.row ul { margin: 0; padding-left: 18px; color: var(--muted); }
+.row li { margin-bottom: 4px; }
+.spec { display: grid; gap: 10px; align-content: start; font-size: 14px; }
+.spec dt { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.spec dd { margin: 0 0 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-family: var(--mono); font-size: 12px; border: 1px solid var(--rule); padding: 2px 8px; background: var(--surface); }
+
+/* skills table */
+.table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 15px; }
+th, td { text-align: left; padding: 14px 12px 14px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+
+/* credentials */
+.creds { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border-top: 2px solid var(--ink); }
+.creds article { padding: 20px 20px 20px 0; border-bottom: 1px solid var(--rule); }
+.creds article:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--rule); }
+.creds h3 { font-size: 18px; margin: 6px 0 6px; font-family: var(--display); font-weight: 700; }
+.creds p { margin: 0; color: var(--muted); font-size: 15px; }
+.status { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.status.done { color: var(--up); }
+.status.prog { color: var(--accent); }
+
+/* contact */
+.contact .wrap { padding-block: 72px 64px; }
+.contact-box { border: 1px solid var(--ink); background: var(--surface); padding: 28px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: center; }
+.contact-box > * { min-width: 0; }
+.contact-box p { margin: 0; max-width: 46ch; }
+.email { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.email code { font-family: var(--mono); font-size: 16px; user-select: all; overflow-wrap: anywhere; }
+button.copy { font: 500 13px var(--mono); background: var(--ink); color: var(--paper); border: 0; padding: 8px 14px; cursor: pointer; }
+button.copy:hover { background: var(--accent); }
+footer .wrap { padding-block: 20px 32px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 820px) {
+  .hero-grid, .row, .contact-box { grid-template-columns: 1fr; gap: 20px; }
+  .strip .wrap { grid-template-columns: repeat(2, 1fr); }
+  .strip div:nth-child(2) { border-right: 0; }
+  .strip div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .creds { grid-template-columns: 1fr; }
+  .creds article:nth-child(even) { padding-left: 0; border-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <span class="mark">JUDE MURRAY / DATA·STATS·MARKETS</span>
+    <nav aria-label="Sections">
+      <a href="#work">Work</a><a href="#stack">Stack</a><a href="#credentials">Credentials</a><a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="label">B.S. Data Analytics &amp; Statistics · Minors in Economics &amp; Data Science · High Point University · May 2027</span>
+    <h1>Jude Murray<span>Data analyst building quantitative tools for markets</span></h1>
+    <div class="hero-grid">
+      <p class="lede">I turn messy financial and model data into screeners, star-schema dashboards and statistical analyses. My work runs in Python, R, SQL and Power BI, and most of it ships as tools I use every trading day.</p>
+      <figure class="chart-card" style="margin:0">
+        <div class="chart-head"><b>OPTIONS VOL SCREENER · S&amp;P 500</b><span>3–45 DTE · <span class="chg" id="chg">+1.84%</span></span></div>
+        <canvas id="tape" aria-label="Illustrative intraday price path" role="img"></canvas>
+        <div class="formula">score = 0.40 · (IV ÷ HV) + 0.30 · IV + … &nbsp;|&nbsp; max 3 contracts / ticker · moneyness-filtered</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div><span class="label">Universe</span><strong>S&amp;P 500</strong></div>
+    <div><span class="label">Languages</span><strong>Python · R · SQL</strong></div>
+    <div><span class="label">Licensing</span><strong>SIE passed</strong></div>
+    <div><span class="label">Graduating</span><strong>May 2027</strong></div>
+  </div>
+</div>
+
+<section class="block" id="work">
+  <div class="wrap">
+    <span class="label">Selected work</span>
+    <h2>Projects</h2>
+    <div class="rows">
+
+      <article class="row">
+        <div>
+          <h3>Trading signal toolset</h3>
+          <div class="file">dynamic_leaderboard.py · short_squeeze_screener.py · signal_merger.py</div>
+          <p>A suite of interconnected Python screeners that rank intraday candidates, flag short-squeeze setups and merge signals across sources into one daily view.</p>
+          <ul>
+            <li>Two-phase leaderboard: a daily candle screen at the open, then intraday rescoring on every poll</li>
+            <li>Signal merger compares hit rates of merged vs. single-source signals</li>
+            <li>Automated with Windows Task Scheduler; exports dated session sheets to Excel</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Data</dt><dd>yfinance market data</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">Python</span><span class="tag">pandas</span><span class="tag">openpyxl</span></dd></div>
+        </dl>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Options volatility screener</h3>
+          <div class="file">options_volatility_screener.py</div>
+          <p>Scans S&amp;P 500 option chains for contracts where implied volatility is rich relative to realized volatility.</p>
+          <ul>
+            <li>Composite score weights the IV/HV ratio at 40% and raw IV at 30%</li>
+            <li>Moneyness filter keeps deep ITM/OTM artifacts from distorting ranks; capped at 3 results per ticker</li>
+            <li>Evaluated Cboe, Polygon.io and Tradier as data-source upgrades</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Window</dt><dd>3–45 days to expiry, liquidity-filtered</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">Python</span><span class="tag">yfinance</span><span class="tag">pandas</span></dd></div>
+        </dl>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>SEC EDGAR fundamentals screener</h3>
+          <div class="file">Fact_Fundamentals.parquet</div>
+          <p>Pulls XBRL financial statements for every S&amp;P 500 constituent and normalizes them into a quarterly fact table for BI.</p>
+          <ul>
+            <li>Tag fallback chains handle inconsistent XBRL reporting across filers</li>
+            <li>Decumulates year-to-date series into discrete quarters</li>
+            <li>Tall fact schema in Parquet, built for Power BI</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Source</dt><dd>SEC EDGAR XBRL</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">Python</span><span class="tag">Parquet</span><span class="tag">Power BI</span></dd></div>
+        </dl>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Trading performance model in Power BI</h3>
+          <div class="file">consolidate_for_powerbi.py → star schema</div>
+          <p>A star-schema model that unifies three screener outputs so I can measure which signals actually pay off.</p>
+          <ul>
+            <li>Dates and Tickers dimensions over leaderboard, merged-signal and short-squeeze fact tables</li>
+            <li>DAX with AVERAGEX(SUMMARIZE()) for per-day intraday range averages and USERELATIONSHIP for dual date keys</li>
+            <li>Signal Type column for merged vs. non-merged hit-rate comparison</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Model</dt><dd>3 facts · 2 dimensions</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">Power BI</span><span class="tag">DAX</span><span class="tag">Python</span></dd></div>
+        </dl>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Vision-language model evaluation (Capstone)</h3>
+          <div class="file">Data Analytics Capstone · R</div>
+          <p>A team study of how a Qwen vision model performs as image complexity increases, using controlled test sets at a fixed resolution.</p>
+          <ul>
+            <li>Tiered test images of increasing complexity, all at identical pixel dimensions</li>
+            <li>Combined results across testers and analyzed token use and latency</li>
+            <li>Normality checks and the matching parametric or non-parametric tests</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Methods</dt><dd>Hypothesis testing, distribution diagnostics</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">R</span><span class="tag">Statistics</span></dd></div>
+        </dl>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Post-earnings reaction model</h3>
+          <div class="file">STS 3130 · Data Mining I</div>
+          <p>An original dataset of S&amp;P 500 post-earnings stock reactions, modeled with supervised learning to predict the direction and size of the move.</p>
+          <ul>
+            <li>Built the dataset from scratch from recent earnings events</li>
+            <li>Cross-sectional design, no time-series dependence</li>
+            <li>Compares interpretable supervised methods against ensemble baselines</li>
+          </ul>
+        </div>
+        <dl class="spec">
+          <div><dt>Methods</dt><dd>Supervised classification &amp; regression</dd></div>
+          <div><dt>Stack</dt><dd class="tags"><span class="tag">R</span><span class="tag">Data mining</span></dd></div>
+        </dl>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="block" id="stack">
+  <div class="wrap">
+    <span class="label">Toolkit</span>
+    <h2>Stack</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Area</th><th>Tools</th><th>Where I've used it</th></tr></thead>
+        <tbody>
+          <tr><td>Programming</td><td>Python (pandas, pyarrow, yfinance), R</td><td>Screeners, ETL pipelines, statistical analysis</td></tr>
+          <tr><td>SQL</td><td>Window functions, CTEs, correlated subqueries, regex, set operations</td><td>Coursework and DataLab projects on sports, retail and financial schemas</td></tr>
+          <tr><td>BI &amp; modeling</td><td>Power BI, DAX, star schemas, Parquet</td><td>Trading performance and fundamentals models</td></tr>
+          <tr><td>Statistics</td><td>Probability, hypothesis testing, ANOVA, confidence intervals</td><td>Capstone, MTH 3150, statistics coursework</td></tr>
+          <tr><td>Machine learning</td><td>Supervised learning, model evaluation</td><td>Post-earnings reaction model</td></tr>
+          <tr><td>Automation</td><td>Task Scheduler, CLI agents, Claude Code</td><td>Scheduled screeners, agentic job-search tooling</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="credentials">
+  <div class="wrap">
+    <span class="label">Credentials &amp; leadership</span>
+    <h2>Beyond the code</h2>
+    <div class="creds">
+      <article>
+        <span class="status done">● Passed</span>
+        <h3>FINRA SIE exam</h3>
+        <p>Securities Industry Essentials, covering markets, products, regulation and trading.</p>
+      </article>
+      <article>
+        <span class="status done">● Certified</span>
+        <h3>DataCamp Data Analyst in SQL</h3>
+        <p>Querying, joining and aggregating relational data, window functions and analytical reporting in SQL.</p>
+      </article>
+      <article>
+        <span class="status done">● Certified</span>
+        <h3>DataCamp Data Engineer in SQL</h3>
+        <p>Database design, data modeling and building reliable transformation pipelines in SQL.</p>
+      </article>
+      <article>
+        <span class="status done">● Active</span>
+        <h3>ACM chapter, HPU</h3>
+        <p>Lead meetings, including a session on AI agents, and build teaching activities like a mystery-themed SQL lab and a Python/R/SQL quiz game.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-box">
+      <div>
+        <span class="label">Contact</span>
+        <h2 style="margin-bottom:12px">Let's talk data.</h2>
+        <p>Open to analyst roles in finance and business analytics. Long term, I'm building toward my own data consultancy.</p>
+      </div>
+      <div class="email">
+        <code id="addr">judemur101@gmail.com</code>
+        <button class="copy" id="copyBtn" type="button">Copy email</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap label">
+    <span>Chalfont, PA · High Point, NC</span>
+    <span>Python · R · SQL · Power BI</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const c = document.getElementById('tape');
+  const ctx = c.getContext('2d');
+  // seeded random walk so the chart is stable on every load
+  let s = 42; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const n = 64, pts = []; let p = 100;
+  for (let i = 0; i < n; i++) { const o = p; p = p + (rnd() - 0.46) * 1.6; const h = Math.max(o, p) + rnd() * .8, l = Math.min(o, p) - rnd() * .8; pts.push({ o, c: p, h, l }); }
+  document.getElementById('chg').textContent = (p >= 100 ? '+' : '') + ((p - 100)).toFixed(2) + '%';
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function draw(progress) {
+    const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+    c.width = w * dpr; c.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const lo = Math.min(...pts.map(d => d.l)), hi = Math.max(...pts.map(d => d.h));
+    const y = v => 8 + (hi - v) / (hi - lo) * (h - 16), step = w / n;
+    ctx.strokeStyle = css('--rule'); ctx.lineWidth = 1;
+    for (let g = 1; g < 4; g++) { const gy = Math.round(h * g / 4) + .5; ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+    const shown = Math.ceil(n * progress);
+    for (let i = 0; i < shown; i++) {
+      const d = pts[i], x = i * step + step / 2, col = d.c >= d.o ? css('--up') : css('--down');
+      ctx.strokeStyle = col; ctx.fillStyle = col;
+      ctx.beginPath(); ctx.moveTo(x, y(d.h)); ctx.lineTo(x, y(d.l)); ctx.stroke();
+      const top = y(Math.max(d.o, d.c)), bh = Math.max(1, Math.abs(y(d.o) - y(d.c)));
+      ctx.fillRect(x - step * .3, top, step * .6, bh);
+    }
+    if (shown) { const last = pts[shown - 1]; ctx.fillStyle = css('--accent'); ctx.beginPath(); ctx.arc((shown - 1) * step + step / 2, y(last.c), 3.5, 0, 7); ctx.fill(); }
+  }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // start fully drawn-capable: animate only from a visible first frame
+  let t0 = null;
+  function frame(ts) { if (!t0) t0 = ts; const pr = Math.min(1, .35 + (ts - t0) / 1400); draw(pr); if (pr < 1) requestAnimationFrame(frame); }
+  if (reduce) draw(1); else { draw(.35); requestAnimationFrame(frame); }
+  addEventListener('resize', () => draw(1));
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw(1));
+  new MutationObserver(() => draw(1)).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  const btn = document.getElementById('copyBtn');
+  btn.addEventListener('click', () => {
+    const t = document.getElementById('addr').textContent;
+    const done = () => { btn.textContent = 'Copied'; setTimeout(() => btn.textContent = 'Copy email', 1600); };
+    try {
+      navigator.clipboard.writeText(t).then(done, () => { getSelection().selectAllChildren(document.getElementById('addr')); btn.textContent = 'Press Ctrl+C'; });
+    } catch (e) { getSelection().selectAllChildren(document.getElementById('addr')); }
+  });
+})();
+</script>
+</body>
+</html>
